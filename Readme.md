@@ -11,10 +11,10 @@ This project intends to show that a pure CPU based neural network can scale on a
 + `<your-path-to-spark-submit> --master <your-spark-master-url> --driver-memory=4G --num-executors 6 --executor-cores 2 --class MnistApp target/scala-2.11/mnist-assembly-0.1-SNAPSHOT.jar 6`
 
 ## results
-+ In single CPU mode, it tooks 190s to achieve 98% accuracy,
-+ In cluster, with following settings, it tooks 91s to achieve the same accuracy.
++ In single CPU mode, it tooks 158s (5 iterations) to achieve 98.25% accuracy,
++ In cluster, with following settings, it tooks 98s (3 iterations) to achieve 98.34%.
 
 ```
-  val num_batches_per_iter = 100
-  val num_iters_per_round = 5
+  val num_batches_per_iter = 200
+  val num_iters_per_round = 2
 ```

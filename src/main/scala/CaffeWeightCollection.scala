@@ -4,6 +4,22 @@ class CaffeWeightCollection(private val col: Array[(String, Array[FloatNDArray])
     col.find(_._1 == name).get._2
   }
   def numLayers = col.length
+
+  def info() {
+    println(s"Num of layers: ${col.length}")
+    for ((_, layer) <- col) {
+      println(s"layer num of NDArray: ${layer.length}")
+      for (arr <- layer) {
+        println(s"  shape: ${arr.shape.deep}")
+      }
+    }
+    val arrs = col.map(_._2).flatten
+    var count = 0
+    for (arr <- arrs) {
+      count += arr.shape.product
+    }
+    println(s"total size: ${count}")
+  }
 }
 
 object CaffeWeightCollection {

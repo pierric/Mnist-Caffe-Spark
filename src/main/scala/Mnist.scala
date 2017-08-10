@@ -33,13 +33,15 @@ class Solver(val args: Array[String], val home: String) extends Serializable {
 object MnistApp {
   val trainBatchSize = 64
   val testBatchSize  = 64
-  val num_batches_per_iter = 700
-  val num_iters_per_round = 1
+  val default_num_batches_per_iter = 200
+  val default_num_iters_per_test = 2
 
   def main(args: Array[String]) {
 
     val mnistHome   = sys.env("MNIST_HOME")
     val numWorkers = args(0).toInt
+    val num_batches_per_iter = if (args.length > 1) args(1).toInt else default_num_batches_per_iter
+    val num_iters_per_test  = if (args.length > 2) args(2).toInt else default_num_iters_per_test
 
     val spark = SparkSession
       .builder()
@@ -78,7 +80,7 @@ object MnistApp {
     // initialize weights (weight of the 1st executor) on master
     var netWeights = workers.map(caffeSolver => caffeSolver.instance.getWeights()).collect()(0)
     logger.log("inital net weights obtained.")
-
+    
     var i = 0
     while (true) {
       logger.log("broadcasting weights", i)
@@ -86,7 +88,7 @@ object MnistApp {
       logger.log("setting weights on workers", i)
       workers.foreach(caffeSolver => caffeSolver.instance.setWeights(broadcastWeights.value))
 
-      if (i % num_iters_per_round == 0) {
+      if (i % num_iters_per_test == 0) {
         logger.log("testing", i)
         testSolver.instance.setWeights(netWeights)
         // request the network on master to use the testing data
